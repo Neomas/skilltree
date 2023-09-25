@@ -6,6 +6,7 @@ module.exports = {
 
   reactStrictMode: true,
 
+
   env: {
     SB_ACCESS_TOKEN: process.env.SB_ACCESS_TOKEN,
   },
