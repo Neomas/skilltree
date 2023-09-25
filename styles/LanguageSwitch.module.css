@@ -1,0 +1,54 @@
+.switch:hover {
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 50px;
+}
+
+.switch img {
+  transition: all 0.25s ease;
+}
+
+.active img {
+  transform: rotate(-180deg);
+}
+
+.dropdown {
+  position: absolute;
+  width: 50px;
+  top: 25px;
+  padding: 0;
+  overflow: hidden;
+  background: #333;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.menuItem {
+  display: flex;
+  padding: 8px 0;
+  justify-content: center;
+  color: white;
+  transition: background 0.2s;
+}
+
+.menuItem:hover {
+  background: #999;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+}

@@ -1,0 +1,117 @@
+$base-font-size: 16px;
+
+// set font faces
+$fontfaces: (
+  "body": (
+    font-family: "Gilroy-Regular, sans-serif",
+    weights: (
+      normal: 400,
+      bold: 700,
+    ),
+  ),
+  "title": (
+    font-family: "Gilroy-SemiBold, sans-serif",
+    weights: (
+      normal: 400,
+      medium: 500,
+      semibold: 600,
+    ),
+  ),
+);
+
+$fontsizes: (
+  base: (
+    null: (
+      16px,
+      1.6,
+    ),
+  ),
+  h1: (
+    null: (
+      36px,
+      1.15,
+    ),
+    xs: (
+      48px,
+    ),
+    lg: (
+      80px,
+      88px,
+    ),
+  ),
+  h2: (
+    null: (
+      32px,
+      1.1,
+    ),
+    md: (
+      48px,
+      1.1,
+    ),
+    lg: (
+      56px,
+      72px,
+    ),
+  ),
+  h3: (
+    null: (
+      24px,
+      1.25,
+    ),
+    md: (
+      48px,
+      1.16,
+    ),
+    lg: (
+      48px,
+      1.16,
+    ),
+  ),
+  h4: (
+    null: (
+      19px,
+      1.33333,
+    ),
+    md: (
+      21px,
+      1.33333,
+    ),
+    lg: (
+      40px,
+      1.2,
+    ),
+  ),
+  h5: (
+    null: (
+      32px,
+      1.25,
+    ),
+    md: (
+      32px,
+      40px,
+    ),
+  ),
+  h6: (
+    null: (
+      28px,
+      1.42,
+    ),
+    md: (
+      28px,
+      1.42,
+    ),
+  ),
+  small: (
+    null: 12px,
+  ),
+  button: (
+    null: (
+      14px,
+      1.1,
+    ),
+    lg: (
+      16px,
+      1.1,
+    ),
+  ),
+);

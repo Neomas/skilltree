@@ -1,0 +1,134 @@
+name: Weekly checkup
+
+on:
+  schedule:
+    - cron: "* 11 * * 1" # every Monday at 12:00 PM
+
+jobs:
+  weekly-checkup:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Await for Vercel deployment
+        uses: UnlyEd/github-action-await-vercel@v1.2.39
+        id: await-vercel
+        with:
+          deployment-url: # [your-url] ex.: borndigital-nextjs.vercel.app # TODO Replace by the domain you want to test
+          timeout: 10 # Wait for 10 seconds before failing
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - uses: actions/checkout@v2
+      - name: Audit mobile preview URL with Lighthouse
+        id: lighthouse_audit_mobile
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://${{ fromJson(steps.await-vercel.outputs.deploymentDetails).url }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - uses: actions/checkout@v2
+      - name: Audit desktop preview  URL with Lighthouse
+        id: lighthouse_audit_desktop
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          configPath: lighthouserc-desktop.js
+          urls: |
+            https://${{ fromJson(steps.await-vercel.outputs.deploymentDetails).url }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Format lighthouse score
+        id: format_lighthouse_score
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const resultMobile = ${{ steps.lighthouse_audit_mobile.outputs.manifest }}[0].summary
+            const linksMobile = ${{ steps.lighthouse_audit_mobile.outputs.links }}
+            const resultDesktop = ${{ steps.lighthouse_audit_desktop.outputs.manifest }}[0].summary
+            const linksDesktop = ${{ steps.lighthouse_audit_desktop.outputs.links }}
+            const formatResult = (res) => Math.round((res * 100))
+            Object.keys(resultMobile).forEach(key => resultMobile[key] = formatResult(resultMobile[key]))
+            Object.keys(resultDesktop).forEach(key => resultDesktop[key] = formatResult(resultDesktop[key]))
+            const score = res => res >= 90 ? '🟢' : res >= 50 ? '🟠' : '🔴'
+            const comment = [
+                `📱 Mobile Scores:`,
+                `⚡️ [Lighthouse report](${Object.values(linksMobile)[0]}) for the changes in this PR:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(resultMobile.performance)} Performance | ${resultMobile.performance} |`,
+                `| ${score(resultMobile.accessibility)} Accessibility | ${resultMobile.accessibility} |`,
+                `| ${score(resultMobile['best-practices'])} Best practices | ${resultMobile['best-practices']} |`,
+                `| ${score(resultMobile.seo)} SEO | ${resultMobile.seo} |`,
+                `| ${score(resultMobile.pwa)} PWA | ${resultMobile.pwa} |`,
+                ' ',
+                `* Lighthouse ran on ${Object.keys(linksMobile)[0]} *`,
+                '------',
+                '------',
+                `🖥️ Desktop Scores:`,
+                `⚡️ [Lighthouse report](${Object.values(linksDesktop)[0]}) for the changes in this PR:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(resultDesktop.performance)} Performance | ${resultDesktop.performance} |`,
+                `| ${score(resultDesktop.accessibility)} Accessibility | ${resultDesktop.accessibility} |`,
+                `| ${score(resultDesktop['best-practices'])} Best practices | ${resultDesktop['best-practices']} |`,
+                `| ${score(resultDesktop.seo)} SEO | ${resultDesktop.seo} |`,
+                `| ${score(resultDesktop.pwa)} PWA | ${resultDesktop.pwa} |`,
+                ' ',
+                `* Lighthouse ran on ${Object.keys(linksDesktop)[0]} *`
+            ].join('<br/><br/>')
+
+            const mail = `<table>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Mobile Score</th>
+                    <th>Desktop Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Performance</td>
+                    <td>${score(resultMobile.performance)} ${resultMobile.performance}</td>
+                    <td>${score(resultDesktop.performance)} ${resultDesktop.performance}</td>
+                  </tr>
+                  <tr>
+                    <td>Accessibility</td>
+                    <td>${score(resultMobile.accessibility)} ${resultMobile.accessibility}</td>
+                    <td>${score(resultDesktop.accessibility)} ${resultDesktop.accessibility}</td>
+                  </tr>
+                  <tr>
+                    <td>Best practices</td>
+                    <td>${score(resultMobile['best-practices'])} ${resultMobile['best-practices']}</td>
+                    <td>${score(resultDesktop['best-practices'])} ${resultDesktop['best-practices']}</td>
+                  </tr>
+                  <tr>
+                    <td>SEO</td>
+                    <td>${score(resultMobile.seo)} ${resultMobile.seo}</td>
+                    <td>${score(resultDesktop.seo)} ${resultDesktop.seo}</td>
+                  </tr>
+                  <tr>
+                    <td>PWA</td>
+                    <td>${score(resultMobile.pwa)} ${resultMobile.pwa}</td>
+                    <td>${score(resultDesktop.pwa)} ${resultDesktop.pwa}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p>
+                Lighthouse ran on ${Object.keys(linksMobile)[0]} (Mobile) and ${Object.keys(linksDesktop)[0]} (Desktop)
+              </p>`
+
+              core.setOutput("comment", comment);
+              core.setOutput("mail", mail);
+
+      - name: SendGrid Action
+        uses: mmichailidis/sendgrid-mail-action@v1.0
+        with:
+          sendgrid-token: ${{secrets.SENDGRID_API_KEY}}
+          mail: "dev@borndigital.be"
+          subject: "🌐 Weekly Lighthouse Borndigital.be" #TODO: change name mail
+          text: "${{ steps.format_lighthouse_score.outputs.mail }}"
+          from: "hello@borndigital.be"

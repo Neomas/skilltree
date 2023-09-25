@@ -1,0 +1,143 @@
+name: Vercel Preview URL Lighthouse Audit
+
+on: [push, fork]
+
+jobs:
+  generate_lighthouse_audit:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jwalton/gh-find-current-pr@v1
+        id: finder
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Add comment to PR
+        id: loading_comment_to_pr
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: lighthouse
+          number: ${{ steps.finder.outputs.pr }}
+          message: |
+            Running Lighthouse audit...
+
+      - name: Await for Main Vercel deployment
+        uses: UnlyEd/github-action-await-vercel@v1.2.39
+        id: await-vercel
+        with:
+          deployment-url: # [your-url] ex.: borndigital-nextjs.vercel.app # TODO Replace by the domain you want to test
+          timeout: 240 # Wait for 240 seconds before failing
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Display deployment status
+        run: "echo The deployment at ${{ fromJson(steps.await-vercel.outputs.deploymentDetails).url }} is ${{ fromJson(steps.await-vercel.outputs.deploymentDetails).readyState }}"
+
+      - id: newbranchurl
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ steps.extract_branch.outputs.branch }}
+
+      - name: PR details
+        run: echo preview-url = borndigital-nextjs-git-${{ steps.newbranchurl.outputs.lowercase }}-borndigital.vercel.app # TODO Replace by the preview domain
+
+      - name: Await for New Branch Vercel deployment
+        uses: UnlyEd/github-action-await-vercel@v1.2.39
+        id: new-branch-await-vercel
+        with:
+          deployment-url: # [your-preview-url] ex.: borndigital-nextjs-git-${{ steps.newbranchurl.outputs.lowercase }}-borndigital.vercel.app # TODO Replace by the domain you want to test
+
+          timeout: 240 # Wait for 240 seconds before failing
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: All New Branch details
+        run: "echo The deployment at ${{ steps.new-branch-await-vercel.outputs.deploymentDetails }} is ${{ fromJson(steps.new-branch-await-vercel.outputs.deploymentDetails).readyState }}"
+
+      - uses: actions/checkout@v2
+      - name: Audit Main URL with Lighthouse
+        id: lighthouse_audit
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://${{ fromJson(steps.await-vercel.outputs.deploymentDetails).url }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - uses: actions/checkout@v2
+      - name: Audit preview URL with Lighthouse
+        id: lighthouse_audit_new_branch
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://${{ fromJson(steps.new-branch-await-vercel.outputs.deploymentDetails).url }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          
+      - name: Format lighthouse score for Main branch
+        id: format_lighthouse_score_main
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const result = ${{ steps.lighthouse_audit.outputs.manifest }}[0].summary
+            const links = ${{ steps.lighthouse_audit.outputs.links }}
+            const formatResult = (res) => Math.round((res * 100))
+            Object.keys(result).forEach(key => result[key] = formatResult(result[key]))
+            const score = res => res >= 90 ? '🟢' : res >= 50 ? '🟠' : '🔴'
+            const comment = [
+                `⚡️ Main branch lighthouse score:`,
+                `⚡️ [Lighthouse report](${Object.values(links)[0]}) for the changes in this PR:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(result.performance)} Performance | ${result.performance} |`,
+                `| ${score(result.accessibility)} Accessibility | ${result.accessibility} |`,
+                `| ${score(result['best-practices'])} Best practices | ${result['best-practices']} |`,
+                `| ${score(result.seo)} SEO | ${result.seo} |`,
+                `| ${score(result.pwa)} PWA | ${result.pwa} |`,
+                ' ',
+                `*Lighthouse ran on [${Object.keys(links)[0]}](${Object.keys(links)[0]})*`,
+                '\n',
+            ].join('\n')
+             core.setOutput("comment", comment);
+
+      - name: Format lighthouse score for New branch
+        id: format_lighthouse_score_new_branch
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const result = ${{ steps.lighthouse_audit_new_branch.outputs.manifest }}[0].summary
+            const links = ${{ steps.lighthouse_audit_new_branch.outputs.links }}
+            const formatResult = (res) => Math.round((res * 100))
+            Object.keys(result).forEach(key => result[key] = formatResult(result[key]))
+            const score = res => res >= 90 ? '🟢' : res >= 50 ? '🟠' : '🔴'
+            const comment = [
+                `⚡️ New branch lighthouse score:`,
+                `⚡️ [Lighthouse report](${Object.values(links)[0]}) for the changes in this PR:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(result.performance)} Performance | ${result.performance} |`,
+                `| ${score(result.accessibility)} Accessibility | ${result.accessibility} |`,
+                `| ${score(result['best-practices'])} Best practices | ${result['best-practices']} |`,
+                `| ${score(result.seo)} SEO | ${result.seo} |`,
+                `| ${score(result.pwa)} PWA | ${result.pwa} |`,
+                ' ',
+                `*Lighthouse ran on [${Object.keys(links)[0]}](${Object.keys(links)[0]})*`
+            ].join('\n')
+             core.setOutput("comment", comment);
+
+      - name: Add comment to PR
+        id: comment_to_pr
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: lighthouse
+          number: ${{ steps.finder.outputs.pr }}
+          recreate: true
+          message: |
+            ${{ steps.format_lighthouse_score_main.outputs.comment }}
+            ${{ steps.format_lighthouse_score_new_branch.outputs.comment }}

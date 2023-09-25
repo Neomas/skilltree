@@ -1,0 +1,48 @@
+@charset 'UTF-8';
+
+/**
+ * Default colors palette
+ *
+ * @type Map
+ */
+$colors: (
+  body: #111111,
+  muted: #7f7f7f,
+  primary: hsl(44, 100%, 50%),
+  secondary: #a0ffff,
+  light-background: #e7e6ea,
+  dark-background: #0e052b,
+  disabled: #a6a8ab,
+  border: #d8d2bf,
+  selection: #0d0f11,
+  ok: green,
+  warning: orange,
+  error: #f96757,
+  black: #000000,
+  white: #ffffff,
+  purple: #6b29a8,
+  red: #c74232,
+  darkblue: #252052,
+  green: #74b7a7,
+  montecarlo: #74b7a7,
+  yellow: #f2e349,
+  pink: #bf0f81,
+  mineshaft: #333333,
+  dimgray: #666666,
+  stardust: #999999,
+  lightgray: #cccccc,
+  gallery: #eeeeee,
+  haze: #f6f6f6,
+  grey: (
+    100: #333333,
+    80: #666666,
+    60: #999999,
+    40: #cccccc,
+    20: #eeeeee,
+    10: #f6f6f6,
+  ),
+  accent: (
+    100: #5acdcb,
+    80: #83d9d8,
+  ),
+) !default;

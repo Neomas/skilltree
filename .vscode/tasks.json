@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "create component",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "read -p \"Enter component name: \" name; read -p \"Enter folder name: Atom, Molecule or Organism: \" folder; if [ \"$folder\" == \"Atom\" ] || [ \"$folder\" == \"Molecule\" ] || [ \"$folder\" == \"Organism\" ]; then mkdir -p components/$folder/$name; touch components/$folder/$name/${name}.tsx; echo \"import React from \\\"react\\\";\nimport styles from \\\"./${name}.module.scss\\\";\n\nconst ${name} = () => {\n  return <div>Hello, world!</div>;\n};\n\nexport default ${name};\" > components/$folder/$name/${name}.tsx; touch components/$folder/$name/${name}.module.scss; echo \"/* ${name} */\n @import \\\"styles/lib\\\";\" > components/$folder/$name/${name}.module.scss; echo \"components/$folder/$name/${name}.tsx and components/$folder/$name/${name}.module.scss files created!\"; else echo \"Invalid folder name. Please use Atom, Molecule or Organism\"; fi"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true,
+                "reveal": "always",
+                "panel": "new",
+                "close": true
+            }
+        }
+    ]
+}
