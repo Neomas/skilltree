@@ -1,55 +1,46 @@
 "use client";
-
-import React, { useCallback } from "react";
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Controls,
-  MiniMap,
-  Background,
-  NodeToolbar,
-  NodeResizer,
-} from "reactflow";
-
+import React from "react";
+import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
 import "reactflow/dist/style.css";
 
-const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-  { id: "2", position: { x: 10, y: 10 }, data: { label: "2" } },
-  { id: "3", position: { x: 10, y: 10 }, data: { label: "2" } },
-  { id: "4", position: { x: 10, y: 10 }, data: { label: "2" } },
+const edges = [
+  {
+    id: "test1-noed2",
+    source: "test1",
+    target: "noed2",
+    label: "to the",
+    type: "step",
+  },
 ];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+
+const nodes = [
+  {
+    id: "test1",
+    data: { label: "Hello" },
+    position: { x: 0, y: 0 },
+    type: "input",
+  },
+  {
+    id: "noed2",
+    data: { label: "World" },
+    position: { x: 100, y: 100 },
+  },
+  {
+    id: "nopt21",
+    data: { label: "World 2" },
+    position: { x: 120, y: 70 },
+  },
+];
 
 const FlowChart = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-  const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
-
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-    >
-      <Controls />
-      <MiniMap />
-      <NodeToolbar />
-      <NodeResizer />
-      <Background
-        // @ts-ignore
-        variant="dots"
-        gap={12}
-        size={1}
-      />
-    </ReactFlow>
+    <div style={{ width: "100%", height: "100%" }}>
+      <ReactFlow nodes={nodes} edges={edges}>
+        <Controls />
+        <MiniMap />
+        <Background color="blue" gap={16} size={1} />
+      </ReactFlow>
+    </div>
   );
 };
 

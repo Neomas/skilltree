@@ -1,3 +1,5 @@
+"use client";
+
 import FlowChart from "@components/FlowChart/FlowChart";
 import React from "react";
 
