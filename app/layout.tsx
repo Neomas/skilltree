@@ -8,7 +8,11 @@ const RootLayout = ({
   children: React.ReactElement;
   params: { locale: string; slug: string[] };
 }) => {
-  return <>{children}</>;
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  );
 };
 
 export default RootLayout;
