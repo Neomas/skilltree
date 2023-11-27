@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import ReactFlow, { Background, Controls, MiniMap } from "reactflow";
+import ReactFlow, { Background, Controls } from "reactflow";
 import "reactflow/dist/style.css";
 
 const edges = [
@@ -28,7 +28,7 @@ const nodes = [
   {
     id: "nopt21",
     data: { label: "World 2" },
-    position: { x: 120, y: 70 },
+    position: { x: 200, y: 150 },
   },
 ];
 
@@ -37,7 +37,7 @@ const FlowChart = () => {
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow nodes={nodes} edges={edges}>
         <Controls />
-        <MiniMap />
+
         <Background color="blue" gap={16} size={1} />
       </ReactFlow>
     </div>
