@@ -1,0 +1,33 @@
+@import "styles/lib";
+
+.modal {
+  display: none;
+  flex-direction: column;
+  gap: rem(8);
+  padding: rem(24);
+  background-color: white;
+  border-radius: rem(8);
+  box-shadow: 0 rem(4) rem(8) rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+
+  &.open {
+    display: flex;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: rem(24);
+}
+
+.close {
+  cursor: pointer;
+  font-size: rem(16);
+  padding: rem(8);
+}

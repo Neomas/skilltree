@@ -1,0 +1,60 @@
+@import "styles/lib";
+
+.customNode {
+  background-color: white;
+  padding: rem(8) rem(12);
+  border-radius: rem(4);
+  border: rem(1) solid #dedede;
+  width: 100%;
+  display: flex;
+  min-width: fit-content;
+  position: relative;
+
+  &:hover {
+    .buttonRight,
+    .buttonLeft,
+    .buttonTop,
+    .buttonBottom {
+      display: flex !important;
+    }
+  }
+}
+
+.button {
+  position: absolute;
+  display: none !important;
+  padding: rem(2) !important;
+  width: rem(16px);
+  height: rem(16px);
+  margin: 0 !important;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.buttonRight {
+  top: calc(50% + rem(16));
+  right: 0;
+  transform: translate(50%, -50%);
+}
+.buttonLeft {
+  top: calc(50% - rem(16));
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+.buttonTop {
+  left: calc(50% + rem(16));
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+.buttonBottom {
+  bottom: 0;
+  left: calc(50% - rem(16));
+  transform: translate(-50%, 50%);
+}
+
+.input {
+  border: 0;
+  border-bottom: rem(1) solid #eee;
+}

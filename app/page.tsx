@@ -3,11 +3,14 @@
 import FlowChart from "@components/FlowChart/FlowChart";
 import Header from "@components/Header/Header";
 import React from "react";
+import { ReactFlowProvider, useNodes } from "reactflow";
 
 const page = () => {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <FlowChart />
+      <ReactFlowProvider>
+        <FlowChart />
+      </ReactFlowProvider>
     </div>
   );
 };
