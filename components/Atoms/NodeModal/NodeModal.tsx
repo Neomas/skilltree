@@ -1,9 +1,8 @@
 import React from "react";
-import styles from "./AddNodeModal.module.scss";
+import styles from "./NodeModal.module.scss";
 import classNames from "classnames";
-import Button from "../Button/Button";
 
-const AddNodeModal = ({
+const NodeModal = ({
   open,
   nodes,
   addFn,
@@ -11,12 +10,13 @@ const AddNodeModal = ({
   selectedNode,
   setSelectedNode,
 }) => {
-  const [label, setLabel] = React.useState("");
+  const [label, setLabel] = React.useState("test");
 
+  console.log(selectedNode);
   return (
     <div className={classNames(styles.modal, open && styles.open)}>
       <div className={styles.header}>
-        <h4>Add a new Node</h4>
+        <h4>Your node</h4>
 
         <button
           className={styles.close}
@@ -28,16 +28,15 @@ const AddNodeModal = ({
           X
         </button>
       </div>
-      <div className={styles.modalContent}>
-        <label htmlFor="label">Name</label>
-        <input
-          className={styles.input}
-          type="text"
-          onChange={(e) => setLabel(e.target.value)}
-        />
-      </div>
 
-      <Button
+      <label htmlFor="label">label</label>
+      <input
+        className={styles.input}
+        type="text"
+        onChange={(e) => setLabel(e.target.value)}
+      />
+
+      <button
         onClick={() => {
           addFn({
             id: `${Math.ceil(Math.random() * 123)}_${label}`,
@@ -49,9 +48,9 @@ const AddNodeModal = ({
         }}
       >
         Add
-      </Button>
+      </button>
     </div>
   );
 };
 
-export default AddNodeModal;
+export default NodeModal;

@@ -22,6 +22,7 @@ import "@xyflow/react/dist/style.css";
 import styles from "./FlowChart.module.scss";
 import Button from "@components/Atoms/Button/Button";
 import AddNodeModal from "@components/Atoms/AddNodeModal/AddNodeModal";
+import NodeModal from "@components/Atoms/NodeModal/NodeModal";
 
 // const initialEdges: Edge[] = [
 //   {
@@ -36,8 +37,8 @@ import AddNodeModal from "@components/Atoms/AddNodeModal/AddNodeModal";
 
 const initialNodes: Node[] = [
   {
-    id: "test1",
-    data: { label: "Hello" },
+    id: "dfasjkl;fsdjkl;sadjfkl;",
+    data: { label: "Hello", done: false },
     position: { x: 0, y: 0 },
     type: "custom",
   },
@@ -52,16 +53,17 @@ const FlowChart = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [open, setOpen] = useState(false);
+  const [openNode, setOpenNode] = useState(false);
   const [selectedNode, setSelectedNode] = useState<Node | null | any>(null);
   const [positionX, setPositionX] = useState(0);
 
   const addNode = (node) => {
     const newNode = {
       ...node,
-      position: { x: positionX + 200, y: 0 },
+      position: { x: positionX, y: 0 },
     };
 
-    setPositionX(positionX + 200);
+    // setPositionX(positionX + 200);
     //@ts-ignore
     setNodes([...nodes, newNode]);
   };
@@ -86,7 +88,16 @@ const FlowChart = () => {
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
-      <Header title={colorMode} />
+      <Header
+        title={colorMode}
+        addNode={() => {
+          setOpen(true);
+        }}
+        edges={edges}
+        setEdges={setEdges}
+        setNodes={setNodes}
+        nodes={nodes}
+      />
       <AddNodeModal
         open={open}
         nodes={nodes}
@@ -95,13 +106,20 @@ const FlowChart = () => {
         setSelectedNode={setSelectedNode}
         setOpen={setOpen}
       />
+      <NodeModal
+        open={openNode}
+        nodes={nodes}
+        addFn={addNode}
+        selectedNode={selectedNode}
+        setSelectedNode={setSelectedNode}
+        setOpen={setOpenNode}
+      />
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodeClick={(nodeId) => {
-          console.log("click", nodeId);
-          // setOpen(true);
-          setSelectedNode(nodeId);
+        onNodeClick={(e) => {
+          e.preventDefault();
+          // setOpenNode(true);
         }}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -113,15 +131,7 @@ const FlowChart = () => {
         height={400}
       >
         <Controls />
-        {/* <Controls /> */}
-        <Panel position="bottom-right">
-          <Button
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            Add Node
-          </Button>
+        {/* <Panel position="bottom-right">
           <div className={styles.itemWrapper}>
             <label className={styles.label}>Color Mode:</label>
             <select onChange={onChange} data-testid="colormode-select">
@@ -130,7 +140,7 @@ const FlowChart = () => {
               <option value="system">system</option>
             </select>
           </div>
-        </Panel>
+        </Panel> */}
         <Background color="blue" gap={16} size={1} />
       </ReactFlow>
     </div>

@@ -2,13 +2,14 @@
 
 .customNode {
   background-color: white;
-  padding: rem(8) rem(12);
-  border-radius: rem(4);
+  padding: rem(12) rem(8);
+  border-radius: rem(16);
   border: rem(1) solid #dedede;
   width: 100%;
   display: flex;
   min-width: fit-content;
   position: relative;
+  transition: 1s border-color cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
   &:hover {
     .buttonRight,
@@ -16,6 +17,14 @@
     .buttonTop,
     .buttonBottom {
       display: flex !important;
+    }
+  }
+
+  &.checked {
+    border-color: #4caf50;
+
+    .input {
+      border: 0 !important;
     }
   }
 }
@@ -34,27 +43,48 @@
 }
 
 .buttonRight {
-  top: calc(50% + rem(16));
-  right: 0;
-  transform: translate(50%, -50%);
-}
-.buttonLeft {
-  top: calc(50% - rem(16));
-  left: 0;
-  transform: translate(-50%, -50%);
-}
-.buttonTop {
-  left: calc(50% + rem(16));
-  top: 0;
-  transform: translate(-50%, -50%);
-}
-.buttonBottom {
-  bottom: 0;
-  left: calc(50% - rem(16));
-  transform: translate(-50%, 50%);
+  right: rem(8);
+  top: rem(8);
 }
 
 .input {
   border: 0;
+  padding: rem(4) rem(8);
   border-bottom: rem(1) solid #eee;
+}
+
+.checkButton {
+  position: absolute;
+  top: rem(8);
+  right: rem(8);
+  cursor: pointer;
+  font-size: rem(16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: rem(8);
+  border: rem(1) solid #dedede;
+  color: #dedede;
+  background-color: white;
+
+  svg {
+    display: block;
+    width: rem(16);
+    position: absolute;
+    top: 40%;
+    left: 60%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 0.1s transform cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  }
+
+  &.checked {
+    background-color: #4caf50;
+    color: white;
+    border-color: #4caf50;
+
+    svg {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
 }

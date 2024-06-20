@@ -7,8 +7,42 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: black;
+  background-color: #333333;
   color: white;
   padding: rem(24) rem(64);
   z-index: 999;
+}
+
+.export {
+  display: flex;
+  gap: rem(8);
+  margin-left: auto;
+}
+
+.importButton {
+  display: flex;
+  padding: rem(8) rem(12);
+  border-radius: rem(4);
+  background-color: white;
+  border: rem(1) solid #3333;
+  color: #333;
+  // margin-bottom: rem(16);
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  font-size: rem(14);
+  margin: 0 !important;
+  line-height: 1;
+  // height: rem(35);
+}
+
+.importInput {
+  display: none;
+  margin: 0;
+}
+
+.addNodeButton,
+.exportButton {
+  margin: 0 !important;
 }
